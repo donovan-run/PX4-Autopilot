@@ -957,8 +957,6 @@ jobs:
     container:
       image: px4io/px4-dev-ros-melodic:2021-09-08
     steps:
-      - uses: runs-on/action@v2
-
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
