@@ -11,7 +11,7 @@ on:
     workflows: ["CI Pipeline (Orchestrator)"]
     types: [completed]
     branches: ['**']
-  # Direct trigger ONLY for tagged releases (orchestrator doesn't run on tags)
+  # Direct trigger for tagged releases (orchestrator doesn't run on tags)
   push:
     tags:
       - 'v*'
@@ -32,8 +32,8 @@ jobs:
   group_targets:
     name: Scan for Board Targets
     # Only run if:
-    # 1. Direct push/tag event, OR
-    # 2. Orchestrator workflow_run completed successfully, OR
+    # 1. Direct push to tag (independent trigger for releases), OR
+    # 2. Orchestrator workflow_run completed successfully (for all branches/PRs), OR
     # 3. Manual workflow_dispatch
     if: |
       github.event_name == 'push' ||

@@ -1033,32 +1033,13 @@ jobs:
 
   # ═══════════════════════════════════════════════════════════════════
   # TIER 5: Full Build Matrix (30-60 min, AWS 8cpu)
-  # Only runs on main/stable/beta/release branches or tags
-  # This is the most expensive job - builds all board targets
+  # Runs via build_all_targets.yml workflow after orchestrator completes
+  # This is the most expensive job - builds all ~200 board targets
   # ═══════════════════════════════════════════════════════════════════
-
-  build-all-targets-gate:
-    name: Full Build Check
-    needs: [sitl-tests, ros-integration-tests, mavros-tests, ros-translation-node]
-    if: |
-      always() &&
-      (github.ref == 'refs/heads/main' ||
-       github.ref == 'refs/heads/stable' ||
-       github.ref == 'refs/heads/beta' ||
-       startsWith(github.ref, 'refs/heads/release/') ||
-       startsWith(github.ref, 'refs/tags/v')) &&
-      needs.sitl-tests.result == 'success' &&
-      needs.ros-integration-tests.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build All Targets Gate Passed
-        run: echo "All prerequisites passed, proceeding with full build matrix"
-    outputs:
-      should_build: ${{ steps.check.outputs.should_build }}
-
-  # Note: The actual build-all-targets job will be triggered separately
-  # by modifying the existing build_all_targets.yml workflow
-  # to depend on this orchestrator completing successfully
+  # The build_all_targets.yml workflow is triggered automatically when:
+  # 1. This orchestrator workflow completes successfully (any branch/PR)
+  # 2. A tagged release is pushed (v*)
+  # See: .github/workflows/build_all_targets.yml
 
   # ═══════════════════════════════════════════════════════════════════
   # SUMMARY JOB
