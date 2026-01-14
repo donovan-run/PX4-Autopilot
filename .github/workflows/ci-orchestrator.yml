@@ -408,18 +408,10 @@ jobs:
         run: ccache -s
 
   macos-build:
-    name: MacOS Build [${{ matrix.config }}]
+    name: MacOS Build
     needs: [basic-tests, ekf-functional-check]
     if: always() && needs.basic-tests.result == 'success' && (needs.ekf-functional-check.result == 'success' || needs.ekf-functional-check.result == 'skipped')
     runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        config: [
-          px4_fmu-v5_default,
-          px4_sitl
-        ]
     steps:
       - name: Install Python 3.10
         uses: actions/setup-python@v5
@@ -474,10 +466,16 @@ jobs:
           ccache -s
           ccache -z
 
-      - name: Make ${{matrix.config}}
-        run: make ${{matrix.config}}
+      - name: Build SITL
+        run: make px4_sitl
 
-      - name: Show ccache stats
+      - name: Show ccache stats after SITL
+        run: ccache -s
+
+      - name: Build FMUv5
+        run: make px4_fmu-v5_default
+
+      - name: Show ccache stats after FMUv5
         run: ccache -s
 
       - name: Cache Save
